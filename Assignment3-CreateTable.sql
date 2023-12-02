@@ -49,3 +49,33 @@ PRIMARY KEY (BookID, Email),
 FOREIGN KEY (BookID) REFERENCES BOOK(BookID),
 FOREIGN KEY (Email) REFERENCES USER(Email)
 );
+
+-- Insert data into AUTHOR table
+INSERT INTO AUTHOR (FirstName, LastName, MiddleName) VALUES
+('John', 'Doe', 'A'),
+('Jane', 'Smith', NULL),
+('Bob', 'Johnson', 'C');
+
+-- Insert data into BOOK table
+INSERT INTO BOOK (Title, Year, NumRaters, Rating) VALUES
+('The Great Gatsby', 1925, 100, 8.5),
+('To Kill a Mockingbird', 1960, 150, 9.2),
+('1984', 1949, 120, 7.8);
+
+-- Insert data into BOOKAUTHOR table
+INSERT INTO BOOKAUTHOR (AuthorID, BookID) VALUES
+(1, 1),
+(2, 2),
+(3, 3);
+
+-- Insert data into USER table
+INSERT INTO USER (Email, NickName, Profile) VALUES
+('john.doe@example.com', 'johndoe', 'Reader'),
+('jane.smith@example.com', 'janesmith', 'Book Lover'),
+('bob.johnson@example.com', 'bobjohnson', 'Author Enthusiast');
+
+-- Insert data into READBOOK table
+INSERT INTO READBOOK (BookID, Email, DateRead, Rating) VALUES
+(1, 'john.doe@example.com', '2023-01-15', 8),
+(2, 'jane.smith@example.com', '2023-02-20', 9),
+(3, 'bob.johnson@example.com', '2023-03-10', 7);
