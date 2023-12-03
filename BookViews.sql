@@ -46,7 +46,7 @@ AFTER INSERT ON READBOOK
 FOR EACH ROW
 UPDATE BOOK
 SET NumRaters = NumRaters + 1,
-Rating = COALESCE((SELECT AVG(Rating) FROM READBOOK WHERE READBOOK.BookID = NEW.BookID), 0.0)
+Rating = (SELECT AVG(Rating) FROM READBOOK WHERE READBOOK.BookID = NEW.BookID)
 WHERE BookID = NEW.BookID;
 
 -- Triggers to update NumRaters when users rate a book during REMOVE
@@ -55,7 +55,7 @@ AFTER DELETE ON READBOOK
 FOR EACH ROW
 UPDATE BOOK
 SET NumRaters = NumRaters - 1,
-Rating = COALESCE((SELECT AVG(Rating) FROM READBOOK WHERE READBOOK.BookID = OLD.BookID), 0.0)
+Rating = (SELECT AVG(Rating) FROM READBOOK WHERE READBOOK.BookID = OLD.BookID)
 WHERE BookID = OLD.BookID;
 
 
@@ -70,7 +70,7 @@ WHERE USER.Email = 'user2@example.com'
 
 -- Test to see what happened to rating and NumRaters when we add a user
 INSERT INTO READBOOK (BookID, Email, DateRead, Rating) VALUES
-(4, 'user6@example.com', '2021-03-15', 10)
+(4, 'user6@example.com', '2021-03-15', 2)
 
 -- Views the Ratings
 SELECT *
