@@ -1,4 +1,4 @@
-use mdo709;
+use mklyu126;
 
 /**
  * Shows Users ID and their read history
@@ -33,11 +33,36 @@ JOIN BOOK b
 ON rb.BookID = b.BookID 
 
 
--- Triggers for delete users and delete all READBOOk data
+-- Triggers for delete users and delete all READBOOK data
 CREATE TRIGGER before_user_delete
 BEFORE DELETE ON USER
 FOR EACH ROW
 DELETE FROM READBOOK WHERE Email = OLD.Email
+
+-- Trigger to ensure books cannot be deleted
+CREATE TRIGGER prevent_book_deletion_before_delete
+BEFORE DELETE ON BOOK 
+FOR EACH ROW 
+BEGIN 
+	SIGNAL SQLSTATE '45000' 
+SET MESSAGE_TEXT = 'Books cannot be deleted';
+END;
+
+-- Trigger to ensure dateAdded cannot be modified, also sets DateAdded to be on current timestamp upon creation of a new user
+CREATE TRIGGER set_dateadded_prevent_update_before_insert
+BEFORE INSERT ON USER 
+FOR EACH ROW 
+BEGIN 
+	IF NEW.DateAdded IS NULL THEN 
+		SET NEW.DateAdded = CURRENT_TIMESTAMP;
+	END IF;
+	
+	IF NEW.DateAdded <> CURRENT_TIMESTAMP THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Modification of DateAdded column is not allowed';
+	END IF;
+END;
+
 
 
 -- Triggers to update NumRaters when users rate a book during INSERT
@@ -67,6 +92,23 @@ WHERE BookID = OLD.BookID;
 -- Test to see what happends if we delete a user
 DELETE FROM USER 
 WHERE USER.Email = 'user2@example.com'
+
+-- Test to see what happens if we delete a book
+DELETE FROM BOOK
+WHERE BOOK.Title = '1984'
+
+-- Attempt to add invalid user
+INSERT INTO USER (Email, DateAdded, NickName, Profile)
+VALUES('invalid@gmail.com', '2023-01-01 12:00:00', 'Mike', 'InvalidProfile');
+
+-- Attempt to change primary key in USER
+UPDATE USER
+SET Email= 'test@gmail.com'
+WHERE NickName = 'johndoe'
+
+-- Attempt to add a book with multiple authors
+
+
 
 -- Test to see what happened to rating and NumRaters when we add a user
 INSERT INTO READBOOK (BookID, Email, DateRead, Rating) VALUES
